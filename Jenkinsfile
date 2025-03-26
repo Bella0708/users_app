@@ -58,7 +58,7 @@ pipeline {
                     // Удаляем существующий симлинк, если он есть
                     if (fileExists(CURRENT_DIR)) {
                         echo "Removing existing symlink."
-                        sh "sudo rm -f ${CURRENT_DIR}"
+                        sh "sudo rm -rf ${CURRENT_DIR}"
                     }
 
                     // Создаем новый симлинк
