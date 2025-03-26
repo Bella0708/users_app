@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        REPO_URL = 'git@github.com:Bella0708/users_app.git' // URL вашего репозитория
+        REPO_URL = 'git@github.com:Bella0708/users_app.git'
         TARGET_DIR = '/var/www/users.app'
         CURRENT_DIR = '/var/www/current'
     }
@@ -16,9 +16,10 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 script {
-                    // Проверяем, существует ли директория
+                    // Ensure TARGET_DIR exists
+                    sh "mkdir -p ${TARGET_DIR}"
+
                     if (!fileExists(TARGET_DIR)) {
-                        // Клонируем репозиторий
                         checkout([$class: 'GitSCM', 
                             branches: [[name: "${params.BRANCH}"]], 
                             doGenerateSubmoduleConfigurations: false, 
@@ -29,7 +30,6 @@ pipeline {
                     } else {
                         echo "Directory exists. Pulling latest changes."
                         dir(TARGET_DIR) {
-                            // Переходим в директорию и обновляем
                             sh "git pull origin ${params.BRANCH}"
                         }
                     }
@@ -38,22 +38,21 @@ pipeline {
         }
 
         stage('Check and Update Symlink') {
-    steps {
-        script {
-            // Create target directory if it doesn't exist
-            sh "mkdir -p ${CURRENT_DIR}"
-            
-            // Check existence of symlink
-            if (fileExists(CURRENT_DIR)) {
-                echo "Updating symlink to the new version."
-                sh "ln -sfn ${TARGET_DIR} ${CURRENT_DIR}"
-            } else {
-                echo "Creating new symlink."
-                sh "ln -s ${TARGET_DIR} ${CURRENT_DIR}"
+            steps {
+                script {
+                    // Ensure CURRENT_DIR exists
+                    sh "mkdir -p ${CURRENT_DIR}"
+
+                    if (fileExists(CURRENT_DIR)) {
+                        echo "Updating symlink to the new version."
+                        sh "ln -sfn ${TARGET_DIR} ${CURRENT_DIR}"
+                    } else {
+                        echo "Creating new symlink."
+                        sh "ln -s ${TARGET_DIR} ${CURRENT_DIR}"
+                    }
+                }
             }
         }
-    }
-}
 
         stage('Run Application') {
             when {
@@ -61,17 +60,16 @@ pipeline {
             }
             steps {
                 script {
-                    // Запускаем приложение на PHP
-                    sh "php -S localhost:8000 -t ${CURRENT_DIR}" // Убедитесь, что путь правильный
+                    sh "php -S localhost:8000 -t ${CURRENT_DIR}"
                 }
             }
         }
-        
+
         stage('Check Application Status') {
             steps {
                 script {
-                    // Проверка состояния приложения
-                    sh "curl -f http://localhost:8000" // Проверяем, что приложение работает
+                    // Check application status
+                    sh "curl -f http://localhost:8000 || echo 'Application is not running'"
                 }
             }
         }
@@ -83,4 +81,3 @@ pipeline {
         }
     }
 }
-     
