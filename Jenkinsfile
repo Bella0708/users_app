@@ -13,6 +13,17 @@ pipeline {
     }
 
     stages {
+        stage('Set Permissions') {
+            steps {
+                script {
+                    // Установка прав доступа к каталогу /var/www
+                    echo "Setting permissions for /var/www"
+                    sh "sudo chown -R jenkins:jenkins /var/www"
+                    sh "sudo chmod -R 755 /var/www"
+                }
+            }
+        }
+
         stage('Clone Repository') {
             steps {
                 script {
