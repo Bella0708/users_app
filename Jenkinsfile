@@ -16,9 +16,10 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 script {
-                    // Ensure TARGET_DIR exists
+                    // Убедитесь, что TARGET_DIR существует
                     sh "mkdir -p ${TARGET_DIR}"
 
+                    // Клонируем или обновляем репозиторий
                     if (!fileExists(TARGET_DIR)) {
                         checkout([$class: 'GitSCM', 
                             branches: [[name: "${params.BRANCH}"]], 
@@ -40,7 +41,7 @@ pipeline {
         stage('Check and Update Symlink') {
             steps {
                 script {
-                    // Ensure CURRENT_DIR exists
+                    // Убедитесь, что CURRENT_DIR существует
                     sh "mkdir -p ${CURRENT_DIR}"
 
                     if (fileExists(CURRENT_DIR)) {
@@ -60,9 +61,9 @@ pipeline {
             }
             steps {
                 script {
-                    // Start the PHP server in the background
+                    // Запускаем приложение на PHP
                     sh "php -S localhost:8000 -t ${CURRENT_DIR} &"
-                    sleep 5 // Wait for the server to start
+                    sleep 5 // Ждем, чтобы сервер успел запуститься
                 }
             }
         }
@@ -70,7 +71,7 @@ pipeline {
         stage('Check Application Status') {
             steps {
                 script {
-                    // Check application status
+                    // Проверка состояния приложения
                     def response = sh(script: "curl -f http://localhost:8000", returnStatus: true)
                     if (response != 0) {
                         error("Application is not running, curl failed.")
