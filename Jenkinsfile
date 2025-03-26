@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     // Убедитесь, что TARGET_DIR существует
-                    sh "sudo mkdir -p ${TARGET_DIR}"
+                    //sh "sudo mkdir -p ${TARGET_DIR}"
 
                     // Клонируем или обновляем репозиторий
                     if (!fileExists(TARGET_DIR)) {
