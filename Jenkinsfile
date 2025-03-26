@@ -7,18 +7,19 @@ pipeline {
     }
 
     environment {
-        REPO_URL = 'git@github.com:Bella0708/users_app.git' // URL вашего репозитория
-        TARGET_DIR = "${env.WORKSPACE}/users.app" // Указываем директорию в рабочей папке Jenkins
-        CURRENT_DIR = "${env.WORKSPACE}/current" // Аналогично для текущей директории
+        REPO_URL = 'git@github.com:Bella0708/users_app.git'
+        TARGET_DIR = '/var/www/users.app'
+        CURRENT_DIR = '/var/www/current'
     }
 
     stages {
         stage('Clone Repository') {
             steps {
                 script {
-                    // Проверяем, существует ли директория
+                    // Ensure TARGET_DIR exists
+                    sh "mkdir -p ${TARGET_DIR}"
+
                     if (!fileExists(TARGET_DIR)) {
-                        // Клонируем репозиторий
                         checkout([$class: 'GitSCM', 
                             branches: [[name: "${params.BRANCH}"]], 
                             doGenerateSubmoduleConfigurations: false, 
@@ -29,7 +30,6 @@ pipeline {
                     } else {
                         echo "Directory exists. Pulling latest changes."
                         dir(TARGET_DIR) {
-                            // Переходим в директорию и обновляем
                             sh "git pull origin ${params.BRANCH}"
                         }
                     }
@@ -40,14 +40,14 @@ pipeline {
         stage('Check and Update Symlink') {
             steps {
                 script {
-                    // Проверка существования симлинка
+                    // Ensure CURRENT_DIR exists
+                    sh "mkdir -p ${CURRENT_DIR}"
+
                     if (fileExists(CURRENT_DIR)) {
                         echo "Updating symlink to the new version."
-                        // Обновляем симлинк
                         sh "ln -sfn ${TARGET_DIR} ${CURRENT_DIR}"
                     } else {
                         echo "Creating new symlink."
-                        // Создаем новый симлинк
                         sh "ln -s ${TARGET_DIR} ${CURRENT_DIR}"
                     }
                 }
@@ -60,17 +60,23 @@ pipeline {
             }
             steps {
                 script {
-                    // Запускаем приложение на PHP
-                    sh "php -S localhost:8000 -t ${CURRENT_DIR}" // Убедитесь, что путь правильный
+                    // Start the PHP server in the background
+                    sh "php -S localhost:8000 -t ${CURRENT_DIR} &"
+                    sleep 5 // Wait for the server to start
                 }
             }
         }
-        
+
         stage('Check Application Status') {
             steps {
                 script {
-                    // Проверка состояния приложения
-                    sh "curl -f http://localhost:8000" // Проверяем, что приложение работает
+                    // Check application status
+                    def response = sh(script: "curl -f http://localhost:8000", returnStatus: true)
+                    if (response != 0) {
+                        error("Application is not running, curl failed.")
+                    } else {
+                        echo "Application is running successfully."
+                    }
                 }
             }
         }
