@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     // Убедитесь, что TARGET_DIR существует
-                    sh "mkdir -p ${TARGET_DIR}"
+                    sh "sudo mkdir -p ${TARGET_DIR}"
 
                     // Клонируем или обновляем репозиторий
                     if (!fileExists(TARGET_DIR)) {
@@ -42,7 +42,7 @@ pipeline {
                     } else {
                         echo "Directory exists. Pulling latest changes."
                         dir(TARGET_DIR) {
-                            sh "git pull origin ${params.BRANCH}"
+                            sh "sudo git pull origin ${params.BRANCH}"
                         }
                     }
                 }
@@ -53,17 +53,17 @@ pipeline {
             steps {
                 script {
                     // Убедитесь, что CURRENT_DIR существует
-                    sh "mkdir -p ${CURRENT_DIR}"
+                    sh "sudo mkdir -p ${CURRENT_DIR}"
 
                     // Удаляем существующий симлинк, если он есть
                     if (fileExists(CURRENT_DIR)) {
                         echo "Removing existing symlink."
-                        sh "rm -f ${CURRENT_DIR}"
+                        sh "sudo rm -f ${CURRENT_DIR}"
                     }
 
                     // Создаем новый симлинк
                     echo "Creating new symlink."
-                    sh "ln -s ${TARGET_DIR} ${CURRENT_DIR}"
+                    sh "sudo ln -s ${TARGET_DIR} ${CURRENT_DIR}"
                 }
             }
         }
