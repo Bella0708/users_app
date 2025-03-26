@@ -38,21 +38,22 @@ pipeline {
         }
 
         stage('Check and Update Symlink') {
-            steps {
-                script {
-                    // Проверка существования симлинка
-                    if (fileExists(CURRENT_DIR)) {
-                        echo "Updating symlink to the new version."
-                        // Обновляем симлинк
-                        sh "ln -sfn ${TARGET_DIR} ${CURRENT_DIR}"
-                    } else {
-                        echo "Creating new symlink."
-                        // Создаем новый симлинк
-                        sh "ln -s ${TARGET_DIR} ${CURRENT_DIR}"
-                    }
-                }
+    steps {
+        script {
+            // Create target directory if it doesn't exist
+            sh "mkdir -p ${CURRENT_DIR}"
+            
+            // Check existence of symlink
+            if (fileExists(CURRENT_DIR)) {
+                echo "Updating symlink to the new version."
+                sh "ln -sfn ${TARGET_DIR} ${CURRENT_DIR}"
+            } else {
+                echo "Creating new symlink."
+                sh "ln -s ${TARGET_DIR} ${CURRENT_DIR}"
             }
         }
+    }
+}
 
         stage('Run Application') {
             when {
