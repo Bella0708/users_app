@@ -45,7 +45,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 script {
-                    sh "sudo mkdir -p ${TARGET_DIR}"
+                    sh "mkdir -p ${TARGET_DIR}"
                     echo "Cloning repository into ${TARGET_DIR}"
                     sh "git clone ${REPO_URL} ${TARGET_DIR}"
                 }
