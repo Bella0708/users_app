@@ -68,7 +68,7 @@ pipeline {
             steps {
                 script {
                     echo "Starting application at ${CURRENT_DIR}"
-                    sh "php -S localhost:8000 -t ${CURRENT_DIR} &"
+                    sh "/usr/bin/php -S localhost:8000 -t ${CURRENT_DIR} &"
                     sleep 5
                 }
             }
