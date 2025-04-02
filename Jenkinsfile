@@ -37,8 +37,8 @@ pipeline {
                 sshCommand remote: remote, command: """
                     set -ex ; set -o pipefail
                     echo "Setting permissions for ${dir}"
-                    sh "sudo chown -R jenkins:jenkins ${dir}"
-                    sh "sudo chmod -R 755 ${dir}"
+                     sudo chown -R jenkins:jenkins ${dir}
+                     sudo chmod -R 755 ${dir}
                 """
                 }
         }
@@ -46,9 +46,9 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 sshCommand remote: remote, command: """
-                    sh "mkdir -p ${TARGET_DIR}"
+                     mkdir -p ${TARGET_DIR}
                     echo "Cloning repository into ${TARGET_DIR}"
-                    sh "git clone ${REPO_URL} ${TARGET_DIR}"
+                    git clone ${REPO_URL} ${TARGET_DIR}
                 """
             }
         }
@@ -57,7 +57,7 @@ pipeline {
             steps {
                 sshCommand remote: remote, command: """
                     echo "Updating symlink to point to ${TARGET_DIR}"
-                    sh "ln -sfn ${TARGET_DIR} ${CURRENT_DIR}"
+                    ln -sfn ${TARGET_DIR} ${CURRENT_DIR}
                 """
             }
         }
@@ -69,7 +69,7 @@ pipeline {
             steps {
                 sshCommand remote: remote, command: """
                     echo "Starting application at ${CURRENT_DIR}"
-                    sh "/usr/bin/php -S localhost:8000 -t ${CURRENT_DIR} &"
+                   /usr/bin/php -S localhost:8000 -t ${CURRENT_DIR} &
                     sleep 5
                 """
             }
