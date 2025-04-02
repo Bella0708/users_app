@@ -16,7 +16,9 @@ pipeline {
         TARGET_DIR = "${dir}/${prj}-${release}"
         CURRENT_DIR = "${dir}/current"
     }
-    stage('Configure Credentials') {
+
+    stages {
+        stage('Configure Credentials') {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'jenkins_key', keyFileVariable: 'private_key', usernameVariable: 'username')]) {
                     script {
@@ -75,6 +77,7 @@ pipeline {
         stage('Check Application Status') {
             steps {
                 script {
+                    echo "Checking application status at http://localhost:8000"
                     def response = sh(script: "curl -f http://localhost:8000", returnStatus: true)
                     if (response != 0) {
                         error("Application is not running, curl failed.")
