@@ -16,7 +16,16 @@ pipeline {
         TARGET_DIR = "${dir}/${prj}-${release}"
         CURRENT_DIR = "${dir}/current"
     }
-
+    stages {
+        stage('Check PHP Availability') {
+            steps {
+                script {
+                    echo "Checking PHP version..."
+                    sh "which php"
+                    sh "/usr/bin/php -v"
+                }
+            }
+        }
     stages {
         stage('Configure credentials') {
             steps {
