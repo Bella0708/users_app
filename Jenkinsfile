@@ -16,19 +16,7 @@ pipeline {
         TARGET_DIR = "${dir}/${prj}-${release}"
         CURRENT_DIR = "${dir}/current"
     }
-
-    stages {
-        stage('Check PHP Availability') {
-            steps {
-                script {
-                    echo "Checking PHP version..."
-                    sh "which php"
-                    sh "/usr/bin/php -v"
-                }
-            }
-        }
-
-        stage('Configure Credentials') {
+    stage('Configure Credentials') {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'jenkins_key', keyFileVariable: 'private_key', usernameVariable: 'username')]) {
                     script {
