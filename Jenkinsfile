@@ -8,9 +8,23 @@ pipeline {
 
     environment {
         REPO_URL = 'git@github.com:Bella0708/users_app.git'
+        HOST = "18.191.137.115"
         TARGET_DIR = '/var/www/users.app'
         CURRENT_DIR = '/var/www/current'
     }
+    stage('Configure credentials') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'jenkins_key', keyFileVariable: 'private_key', usernameVariable: 'username')]) {
+                    script {
+                        remote.name = "${env.HOST}"
+                        remote.host = "${env.HOST}"
+                        remote.user = "$username"
+                        remote.identity = readFile("$private_key")
+                        remote.allowAnyHosts = true
+                    }
+                }
+            }
+        }    
 
     stages {
         stage('Set Permissions') {
