@@ -16,6 +16,7 @@ pipeline {
         TARGET_DIR = "${dir}/${prj}-${release}"
         CURRENT_DIR = "${dir}/current"
     }
+
     stages {
         stage('Check PHP Availability') {
             steps {
@@ -26,15 +27,15 @@ pipeline {
                 }
             }
         }
-    stages {
-        stage('Configure credentials') {
+
+        stage('Configure Credentials') {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'jenkins_key', keyFileVariable: 'private_key', usernameVariable: 'username')]) {
                     script {
                         remote.name = "${env.HOST}"
                         remote.host = "${env.HOST}"
-                        remote.user = "$username"
-                        remote.identity = readFile("$private_key")
+                        remote.user = username
+                        remote.identity = readFile(private_key)
                         remote.allowAnyHosts = true
                     }
                 }
@@ -102,5 +103,4 @@ pipeline {
             echo 'Pipeline finished.'
         }
     }
-}
 }
