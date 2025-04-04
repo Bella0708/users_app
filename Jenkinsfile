@@ -15,6 +15,7 @@ pipeline {
         HOST = "18.217.152.167"
         TARGET_DIR = "${dir}/${prj}-${release}"
         CURRENT_DIR = "${dir}/current"
+        DOCKER_COMPOSE_FILE = "docker-compose.yml" // Добавлен путь к docker-compose.yml
     }
 
     stages {
@@ -62,15 +63,13 @@ pipeline {
             }
         }
 
-        stage('Run Application') {
-            when {
-                expression { params.RUN_DEPLOY }
-            }
+        stage('Deploy Docker Containers') { // Добавлен этап запуска контейнеров Docker
             steps {
                 sshCommand remote: remote, command: """
-                    echo "Starting application at ${CURRENT_DIR}"
-                   /usr/bin/php -S localhost:8000 -t ${CURRENT_DIR} &
-                    sleep 5
+                    cd ${CURRENT_DIR}
+                    echo "Deploying Docker containers using ${DOCKER_COMPOSE_FILE}"
+                    docker-compose -f ${DOCKER_COMPOSE_FILE} down || true
+                    docker-compose -f ${DOCKER_COMPOSE_FILE} up -d
                 """
             }
         }
