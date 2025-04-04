@@ -15,7 +15,7 @@ pipeline {
         HOST = "18.117.171.233"
         TARGET_DIR = "${dir}/${prj}-${release}"
         CURRENT_DIR = "${dir}/current"
-        DOCKER_COMPOSE_FILE = "docker-compose.yml" // Добавлен путь к docker-compose.yml
+        DOCKER_COMPOSE_FILE = "docker-compose.yaml" // Добавлен путь к docker-compose.yml
     }
 
     stages {
