@@ -12,7 +12,7 @@ pipeline {
         prj = "users_app"
         release = sh(script: "date +%s", returnStdout: true).trim()
         REPO_URL = "git@github.com:Bella0708/users_app.git"
-        HOST = "18.217.152.167"
+        HOST = "18.117.171.233"
         TARGET_DIR = "${dir}/${prj}-${release}"
         CURRENT_DIR = "${dir}/current"
         DOCKER_COMPOSE_FILE = "docker-compose.yml" // Добавлен путь к docker-compose.yml
@@ -77,8 +77,8 @@ pipeline {
         stage('Check Application Status') {
             steps {
                 script {
-                    echo "Checking application status at http://${env.HOST}:8000"
-                    def response = sh(script: "curl -f http://${env.HOST}:8000", returnStatus: true)
+                    echo "Checking application status at http://${env.HOST}:8080"
+                    def response = sh(script: "curl -f http://${env.HOST}:8080", returnStatus: true)
                     if (response != 0) {
                         error("Application is not running, curl failed.")
                     } else {
